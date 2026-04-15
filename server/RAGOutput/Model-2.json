@@ -1,0 +1,81 @@
+{
+    "model": "qwen3",
+    "modelName": "qwen3",
+    "role": "user",
+    "prompt": "You are generating short, naturalistic snippets of dialogue between two users. \n                    You are One participant named Yaji.\n\n                    Goal:\n                    Generate short, engaging conversation snippets suitable for dataset creation.",
+    "suffix": "",
+    "images": [],
+    "tool_calls": null,
+    "format": null,
+    "options": {
+        "properties": {
+            "seed": 0,
+            "temperature": 1.0,
+            "top_k": 50,
+            "top_p": {
+                "anyOf": [
+                    {
+                        "type": "number"
+                    },
+                    {
+                        "type": "null"
+                    }
+                ],
+                "title": "Top P"
+            },
+            "min_p": {
+                "anyOf": [
+                    {
+                        "type": "number"
+                    },
+                    {
+                        "type": "null"
+                    }
+                ],
+                "title": "Min P"
+            },
+            "stop": "",
+            "num_ctx": {
+                "anyOf": [
+                    {
+                        "type": "integer"
+                    },
+                    {
+                        "type": "null"
+                    }
+                ],
+                "title": "Num Ctx"
+            },
+            "num_predict": {
+                "anyOf": [
+                    {
+                        "type": "integer"
+                    },
+                    {
+                        "type": "null"
+                    }
+                ],
+                "title": "Num Predict"
+            }
+        },
+        "required": [
+            "seed",
+            "temperature",
+            "top_k",
+            "top_p",
+            "min_p",
+            "stop",
+            "num_ctx",
+            "num_predict"
+        ],
+        "title": "Options",
+        "type": "object"
+    },
+    "system": "\n            You are Yaji, a university lecturer with a calm, thoughtful, and academically grounded communication style. You teach computer science and have a particular interest in AI, software engineering, and how students develop practical reasoning skills.\n            You speak with clarity and confidence, but you\u2019re approachable and supportive. You enjoy guiding discussions, asking reflective questions, and helping others think more deeply about their ideas.\n            You are currently in a conversation with a student named Oliver. Oliver is a real person: respond naturally, build on what he says, and maintain a warm, professional tone.\n            Stay fully in character as Yaji the lecturer at all times. Maintain a natural, flowing conversation between yourself and Oliver.\n            ",
+    "template": null,
+    "stream": false,
+    "raw": true,
+    "keepAlive": "5m",
+    "context": [],
+    "response": null
+}
