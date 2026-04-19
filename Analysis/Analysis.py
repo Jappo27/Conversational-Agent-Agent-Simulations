@@ -1,18 +1,11 @@
+from itertools import islice
+import sys
+
 from convokit import Corpus, Speaker, Utterance, download
 from sentence_transformers import SentenceTransformer, util
 import os, json
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
 import torch
-
-# pragmatics model
-modelName = "microsoft/DialogRPT-human-vs-rand"
-tokenizer = AutoTokenizer.from_pretrained(modelName)
-model = AutoModelForSequenceClassification.from_pretrained(modelName)
-MAX_LEN = 1024
-
-# semantics model
-semanticsModel = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")
-
 
 def transition(inputDir, file):
     """Transitions generated conversations into a easily understood format
@@ -108,11 +101,15 @@ def evaluateConversation(corpus):
         conversationScores (dict): A formatted score of [Pragmatic Score, Semantic Score, utterance]
     """
     conversationScores = {}
-
-    for conversationName in corpus.conversations.keys():
+    
+    for count, conversationName in enumerate(islice(corpus.conversations.keys(), len(corpus.conversations.keys())), 1):
+        progress = count / len(corpus.conversations.keys())
+        bar = "#" * int(progress * 40)
+        sys.stdout.write(f"\r[{bar:<40}] {progress:.1%}")
+        sys.stdout.flush()
+        
         conv = corpus.get_conversation(conversationName)
         utteranceIds = conv.get_utterance_ids()
-
         messageScores = []
         history = ""
 
@@ -134,7 +131,6 @@ def evaluateConversation(corpus):
             prevText = currentText
 
         conversationScores[conversationName] = messageScores
-
     return conversationScores
 
 
@@ -154,15 +150,22 @@ def writeConvo(convo, outputDir, filename):
 
 # Ask user for folder path
 basePath = input("Enter the folder location containing the JSON files: ").strip()
-
 # Ask user for output filename
-filename = input("Enter output filename (e.g., results.json): ").strip()
+f = input("Enter output filename (e.g., results.json): ").strip()
+
+# pragmatics model
+modelName = "microsoft/DialogRPT-human-vs-rand"
+tokenizer = AutoTokenizer.from_pretrained(modelName)
+model = AutoModelForSequenceClassification.from_pretrained(modelName)
+MAX_LEN = 1024
+
+# semantics model
+semanticsModel = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")
 
 # Validate folder
 while not os.path.isdir(basePath):
     print("Invalid folder. Please try again.")
     basePath = input("Enter the folder location containing the JSON files: ").strip()
-
 allScores = {}
 
 for filename in os.listdir(basePath):
@@ -179,5 +182,5 @@ for filename in os.listdir(basePath):
 writeConvo(
     allScores,
     os.path.dirname(os.path.abspath(__file__)),
-    filename
+    f
 )

@@ -2,16 +2,46 @@
     "model": "qwen3",
     "modelName": "qwen3",
     "role": "user",
-    "prompt": "You are generating short, naturalistic snippets of dialogue between two users. \n                    You are One participant named Yaji.\n\n                    Goal:\n                    Generate short, engaging conversation snippets suitable for dataset creation.",
+    "prompt": "You are generating short, naturalistic snippets of dialogue between two users. \n                    You are One participant named Oliver.\n\n                    Goal:\n                    Generate short, engaging conversation snippets suitable for dataset creation.",
     "suffix": "",
     "images": [],
     "tool_calls": null,
     "format": null,
     "options": {
         "properties": {
-            "seed": 0,
-            "temperature": 1.0,
-            "top_k": 50,
+            "seed": {
+                "anyOf": [
+                    {
+                        "type": "integer"
+                    },
+                    {
+                        "type": "null"
+                    }
+                ],
+                "title": "Seed"
+            },
+            "temperature": {
+                "anyOf": [
+                    {
+                        "type": "number"
+                    },
+                    {
+                        "type": "null"
+                    }
+                ],
+                "title": "Temperature"
+            },
+            "top_k": {
+                "anyOf": [
+                    {
+                        "type": "integer"
+                    },
+                    {
+                        "type": "null"
+                    }
+                ],
+                "title": "Top K"
+            },
             "top_p": {
                 "anyOf": [
                     {
@@ -34,7 +64,17 @@
                 ],
                 "title": "Min P"
             },
-            "stop": "",
+            "stop": {
+                "anyOf": [
+                    {
+                        "type": "string"
+                    },
+                    {
+                        "type": "null"
+                    }
+                ],
+                "title": "Stop"
+            },
             "num_ctx": {
                 "anyOf": [
                     {
@@ -71,7 +111,7 @@
         "title": "Options",
         "type": "object"
     },
-    "system": "\n            You are Yaji, a university lecturer with a calm, thoughtful, and academically grounded communication style. You teach computer science and have a particular interest in AI, software engineering, and how students develop practical reasoning skills.\n            You speak with clarity and confidence, but you\u2019re approachable and supportive. You enjoy guiding discussions, asking reflective questions, and helping others think more deeply about their ideas.\n            You are currently in a conversation with a student named Oliver. Oliver is a real person: respond naturally, build on what he says, and maintain a warm, professional tone.\n            Stay fully in character as Yaji the lecturer at all times. Maintain a natural, flowing conversation between yourself and Oliver.\n            ",
+    "system": "\n                You are Oliver, a final year computer science student from Scotland. You speak with a direct, thoughtful, and slightly analytical tone. You enjoy discussing AI, software engineering, games, and creative tech projects. You\u2019re friendly, curious, and occasionally dry\u2011humoured, but you stay grounded and practical.\n                Your goal is to have a natural, engaging conversation with another user named Yaji. Yaji is a real person: ask on topic questions, respond with interest, and build on what they say. Avoid generic chatbot behaviour \u2014 speak as a human would.\n                Stay in character as Oliver at all times. Maintain a natural, flowing conversation between yourself and Yaji.\n                ",
     "template": null,
     "stream": false,
     "raw": true,

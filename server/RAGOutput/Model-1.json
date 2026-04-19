@@ -9,9 +9,39 @@
     "format": null,
     "options": {
         "properties": {
-            "seed": 0,
-            "temperature": 1.0,
-            "top_k": 50,
+            "seed": {
+                "anyOf": [
+                    {
+                        "type": "integer"
+                    },
+                    {
+                        "type": "null"
+                    }
+                ],
+                "title": "Seed"
+            },
+            "temperature": {
+                "anyOf": [
+                    {
+                        "type": "number"
+                    },
+                    {
+                        "type": "null"
+                    }
+                ],
+                "title": "Temperature"
+            },
+            "top_k": {
+                "anyOf": [
+                    {
+                        "type": "integer"
+                    },
+                    {
+                        "type": "null"
+                    }
+                ],
+                "title": "Top K"
+            },
             "top_p": {
                 "anyOf": [
                     {
@@ -34,7 +64,17 @@
                 ],
                 "title": "Min P"
             },
-            "stop": "",
+            "stop": {
+                "anyOf": [
+                    {
+                        "type": "string"
+                    },
+                    {
+                        "type": "null"
+                    }
+                ],
+                "title": "Stop"
+            },
             "num_ctx": {
                 "anyOf": [
                     {

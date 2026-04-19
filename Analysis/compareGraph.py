@@ -109,6 +109,8 @@ semanticStdDevs_f = [std for t, std in zip(turns, semanticStdDevs) if t in share
 # Filter compare
 comparePragmaticAvgScores_f = [comparePragmaticAvgScores[t] for t in shared_turns]
 compareSemanticAvgScores_f = [compareSemanticAvgScores[t] for t in shared_turns]
+comparePragmaticStdDevs_f = [std for t, std in zip(turns, pragmaticStdDevs) if t in shared_turns]
+compareSemanticStdDevs_f = [std for t, std in zip(turns, semanticStdDevs) if t in shared_turns]
 
 # --- PRAGMATIC PLOT ---
 plt.figure(figsize=(10, 6))
@@ -119,13 +121,16 @@ plt.errorbar(
     marker='o', capsize=4, label=f"{base_name} Coherence"
 )
 
+# Comparison with error bars
+plt.errorbar(
+    shared_turns, comparePragmaticAvgScores_f, yerr=comparePragmaticStdDevs_f,
+    marker='o', capsize=4, label=f"{compare_name} Coherence"
+)
+
 # Trend line for baseline
 prag_coeffs = np.polyfit(turns_f, pragmaticAvgScores_f, 1)
 prag_trend = np.poly1d(prag_coeffs)
 plt.plot(turns_f, prag_trend(turns_f), '--', color='red', label=f"{base_name} Trend")
-
-# Comparison line
-plt.plot(shared_turns, comparePragmaticAvgScores_f, marker='o', label=f"{compare_name} Coherence")
 
 # Trend line for comparison
 comp_prag_coeffs = np.polyfit(shared_turns, comparePragmaticAvgScores_f, 1)
@@ -143,6 +148,7 @@ plt.title("Dialog-RPT Average Score per Turn")
 plt.grid(True)
 plt.legend()
 plt.tight_layout()
+plt.ylim(0, 1)
 plt.show()
 
 
@@ -155,13 +161,16 @@ plt.errorbar(
     marker='o', capsize=4, label=f"{base_name} Semantic"
 )
 
+# Comparison with error bars
+plt.errorbar(
+    shared_turns, compareSemanticAvgScores_f, yerr=compareSemanticStdDevs_f,
+    marker='o', capsize=4, label=f"{compare_name} Semantic"
+)
+
 # Trend line for baseline
 sem_coeffs = np.polyfit(turns_f, semanticAvgScores_f, 1)
 sem_trend = np.poly1d(sem_coeffs)
 plt.plot(turns_f, sem_trend(turns_f), '--', color='red', label=f"{base_name} Trend")
-
-# Comparison line
-plt.plot(shared_turns, compareSemanticAvgScores_f, marker='o', label=f"{compare_name} Semantic")
 
 # Trend line for comparison
 comp_sem_coeffs = np.polyfit(shared_turns, compareSemanticAvgScores_f, 1)
@@ -179,4 +188,5 @@ plt.title("SBERT Average Score per Turn")
 plt.grid(True)
 plt.legend()
 plt.tight_layout()
+plt.ylim(0, 1)
 plt.show()

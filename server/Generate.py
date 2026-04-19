@@ -7,10 +7,6 @@ import json
 from CRRR import generateAgentText
 from write import writeConvo
 
-turns = 5
-ConvoNum = 10
-reflexes = 5
-
 def vaultFiles(path, destionation):
     files = []
 
@@ -125,71 +121,86 @@ def conversate(ConvoNum, turns, reflexes, profile1, profile2):
         writeConvo({"model1": model1Thinking, "model2": model2Thinking}, output_dir, f"Thinking/Thinking-{counter}.json")
         
 
-profile1 = {
-    "modelName": "qwen3",
-    "role": 'user',
-    "prompt": """You are generating short, naturalistic snippets of dialogue between two users. 
-                    You are One participant named Oliver.
+ALLOWED_KEYS = {
+    "modelName", "role", "prompt", "system", "suffix", "raw", "stream",
+    "keepAlive", "images", "context", "seed", "temperature", "topK",
+    "minP", "maxP", "stop", "numCTX", "numPredict", "format", 'options', 'tool_calls', 'response', 'model', 'template'
+}
 
-                    Goal:
-                    Generate short, engaging conversation snippets suitable for dataset creation.""",
-    "system": """
-                You are Oliver, a final year computer science student from Scotland. You speak with a direct, thoughtful, and slightly analytical tone. You enjoy discussing AI, software engineering, games, and creative tech projects. You’re friendly, curious, and occasionally dry‑humoured, but you stay grounded and practical.
-                Your goal is to have a natural, engaging conversation with another user named Yaji. Yaji is a real person: ask on topic questions, respond with interest, and build on what they say. Avoid generic chatbot behaviour — speak as a human would.
-                Stay in character as Oliver at all times. Maintain a natural, flowing conversation between yourself and Yaji.
-                """,
-    "suffix": '',
-    "raw": True,
-    "stream": False,
-    "keepAlive": 5,
-    "images": [],
-    "context": '',
+def validate_profile_json(data: dict):
+    unknown = set(data.keys()) - ALLOWED_KEYS
+    if unknown:
+        raise ValueError(f"Invalid keys found in profile: {unknown}")
+    return True
 
-    "seed": 0,
-    "temperature": 1.0,
-    "topK": 50,
-    "minP": 0.0,
-    "maxP": 1.0,
-    "stop": '',
-    "numCTX": 40960,
-    "numPredict": 0.0,
+
+def loadUserJson(txt):
+    while True:
+        path = input(txt).strip()
+
+        if os.path.exists(path):
+            with open(path, "r") as f:
+                data = json.load(f)
+
+            # Validate keys
+            try:
+                validate_profile_json(data)
+            except Exception as e:
+                print(f"Profile validation failed: {e}")
+                continue
+
+            filename = os.path.basename(path)
+            return data, filename
+
+        else:
+            print(f"File not found: {path}. Try again.")
             
-    format: []
+def validateParams(turns, ConvoNum, reflexes):
+    params = {
+        "turns": turns,
+        "ConvoNum": ConvoNum,
+        "reflexes": reflexes
     }
 
+    for name, value in params.items():
+        if not isinstance(value, int):
+            raise TypeError(f"{name} must be an integer, got {type(value).__name__}")
+        if value <= 0:
+            raise ValueError(f"{name} must be greater than 0, got {value}")
 
-profile2 = {
-    "modelName": "qwen3",
-    "role": 'user',
-    "prompt": """You are generating short, naturalistic snippets of dialogue between two users. 
-                    You are One participant named Yaji.
+    return True
 
-                    Goal:
-                    Generate short, engaging conversation snippets suitable for dataset creation.""",
-    "system": 
-            """
-            You are Yaji, a university lecturer with a calm, thoughtful, and academically grounded communication style. You teach computer science and have a particular interest in AI, software engineering, and how students develop practical reasoning skills.
-            You speak with clarity and confidence, but you’re approachable and supportive. You enjoy guiding discussions, asking reflective questions, and helping others think more deeply about their ideas.
-            You are currently in a conversation with a student named Oliver. Oliver is a real person: respond naturally, build on what he says, and maintain a warm, professional tone.
-            Stay fully in character as Yaji the lecturer at all times. Maintain a natural, flowing conversation between yourself and Oliver.
-            """,
-    "suffix": '',
-    "raw": True,
-    "stream": False,
-    "keepAlive": 5,
-    "images": [],
-    "context": '',
+def getInputFromUser(prompt_text):
+    while True:
+        value = input(prompt_text).strip()
 
-    "seed": 0,
-    "temperature": 1.0,
-    "topK": 50,
-    "minP": 0.0,
-    "maxP": 1.0,
-    "stop": '',
-    "numCTX": 40960,
-    "numPredict": 0.0,
-            
-    format: []
-    }
-        
+        if not value.isdigit():
+            print("Please enter a valid positive integer.")
+            continue
+
+        value = int(value)
+
+        if value <= 0:
+            print("Value must be greater than 0.")
+            continue
+
+        return value
+
+profile1, filename = loadUserJson("Enter path to first agent profile: ")
+profile2 , filename = loadUserJson("Enter path to second agent profile: ")
+    
+
+# --- Loop until valid ---
+while True:
+    turns = getInputFromUser("Enter number of turns: ")
+    ConvoNum = getInputFromUser("Enter number of conversations: ")
+    reflexes = getInputFromUser("Enter number of reflexions: ")
+
+    try:
+        validateParams(turns, ConvoNum, reflexes)
+        print("Parameters accepted.")
+        break
+    except Exception as e:
+        print(f"Invalid input: {e}")
+
 conversate(ConvoNum, turns, reflexes, profile1, profile2)

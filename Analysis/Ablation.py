@@ -50,12 +50,13 @@ def computeTurnAverages(dataset, minCount=20):
 
 
 paths = {
-    "BaseLLM": r"C:\Users\jappo\OneDrive\Desktop\Dissertation\BaseLLM.json",
-    "PromptStruct": r"C:\Users\jappo\OneDrive\Desktop\Dissertation\PromptStruct.json",
-    "Rag": r"C:\Users\jappo\OneDrive\Desktop\Dissertation\Rag.json",
-    "ReAct": r"C:\Users\jappo\OneDrive\Desktop\Dissertation\ReAct.json",
-    "CRVR": r"C:\Users\jappo\OneDrive\Desktop\Dissertation\CRRRMethodology.json",
-    "CRVRS": r"C:\Users\jappo\OneDrive\Desktop\Dissertation\CRVRS.json"
+    "BaseLLM": r"C:\Users\jappo\OneDrive\Desktop\Conversational-Agent-Agent-Simulations\Analysis\DATA\BaseLLM.json",
+    "PromptStruct": r"C:\Users\jappo\OneDrive\Desktop\Conversational-Agent-Agent-Simulations\Analysis\DATA\PromptStruct.json",
+    "Rag": r"C:\Users\jappo\OneDrive\Desktop\Conversational-Agent-Agent-Simulations\Analysis\DATA\\Rag.json",
+    "ReAct": r"C:\Users\jappo\OneDrive\Desktop\Conversational-Agent-Agent-Simulations\Analysis\DATA\ReAct.json",
+    "CRRR": r"C:\Users\jappo\OneDrive\Desktop\Conversational-Agent-Agent-Simulations\Analysis\DATA\CRRRMethodology.json",
+    "CRRRS": r"C:\Users\jappo\OneDrive\Desktop\Conversational-Agent-Agent-Simulations\Analysis\DATA\CRVRS.json",
+    "ComplexPrompt": r"C:\Users\jappo\OneDrive\Desktop\Conversational-Agent-Agent-Simulations\Analysis\DATA\ComplexPrompt.json"
 }
 
 datasets = {name: json.load(open(path, "r")) for name, path in paths.items()}
@@ -69,12 +70,13 @@ for name, data in datasets.items():
     datasets[name] = trimmed
     
 colors = {
-    "CRVRS": "tab:olive",
-    "CRVR": "tab:purple",
+    "CRRRS": "tab:olive",
+    "CRRR": "tab:purple",
     "ReAct": "tab:red",
     "Rag": "tab:green",
     "PromptStruct": "tab:orange",
-    "BaseLLM": "tab:blue"
+    "BaseLLM": "tab:blue",
+    "ComplexPrompt": "tab:pink"
 }
 
 # raw pragmatic plot
