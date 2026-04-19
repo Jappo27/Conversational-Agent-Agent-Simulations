@@ -278,3 +278,30 @@ Path = Server -> RAGOutput -> Gen
 ### Formating of Generated Conversations
 
 ### Comparison of Generated Conversations to a baseline
+
+# Citation and Terms of Use
+
+When generating synthetic data for psychological research, several ethical considerations must be addressed. The persona‑design process within the proposed system enables researchers to approximate the demographics and characteristics of real interviewees, allowing the tool to function as a proxy for natural interviews. To ensure this practice remains ethically sound, three guidelines are recommended:
+
+1. **Declaration of Use.**  
+   Any use of synthetic conversations must be explicitly disclosed. Clear declaration ensures that other researchers can accurately interpret the methodological choices and understand that synthetic data contributed to the reported findings.
+
+2. **Data Storage and Transparency.**  
+   Where appropriate, synthetic data should be stored separately from natural data and made publicly accessible. This separation allows independent verification, supports reproducibility, and prevents unintentional conflation of synthetic and natural corpora.
+
+3. **Threshold of Natural Data.**  
+   Synthetic data should only be introduced after a meaningful quantity of natural interviews has been collected. The system is intended to supplement not replace human generated data. Maintaining a threshold helps preserve ecological validity and prevents over‑reliance on synthetic corpora.
+
+Together, these guidelines promote transparency, reproducibility, and responsible use of synthetic conversational data in psychological research.
+
+---
+
+**CC BY‑NC‑SA License**
+
+This work is released under the *Creative Commons Attribution–NonCommercial–ShareAlike* license. This license permits redistribution, adaptation, and non‑commercial use, provided that appropriate attribution is given and any derivative works are distributed under the same license.
+
+**Restrictions:**  
+Users may not employ automated systems—including scrapers or AI models—to extract, analyse, or otherwise process this repository or its contents.
+
+**Acceptance:**  
+By downloading, installing, or using this software, you acknowledge and accept these terms.
