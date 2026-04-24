@@ -1,10 +1,19 @@
-openai
+numpy<2
+scipy>=1.10
+pandas>=2.0
+matplotlib>=3.7
+statsmodels>=0.14
+PyPDF2>=3.0
+beautifulsoup4>=4.12
+lxml>=4.9
+python-dotenv>=1.0
+pyyaml>=6.0
+requests>=2.31
+pydantic>=2.0
+flask>=3.0
+flask-cors>=4.0
 torch
-PyPDF2
+sentence-transformers>=2.2
+transformers>=4.40
+convokit>=3.0
 ollama
-pyyaml
-beautifulsoup4
-lxml
-python-dotenv
-pip3 install convokit
-pip install "numpy<2"
