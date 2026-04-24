@@ -1,6 +1,6 @@
 import json
 import os
-from scipy.stats import f_oneway, f
+from scipy.stats import ttest_ind, f
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -47,22 +47,21 @@ def computeTurnAverages(dataset, minCount=20):
         semanticScores
     )
 
-def calcOWANOVAConversation(baseAvgScores, comparisonAvgScores, comparisonAvgScores2):
-    shared_turns = min(len(baseAvgScores), len(comparisonAvgScores), len(comparisonAvgScores2))
+def calcTTestConversation(baseAvgScores, comparisonAvgScores):
+    shared_turns = min(len(baseAvgScores), len(comparisonAvgScores))
 
-    f_list = []
+    t_list = []
     p_list = []
 
     for i in range(shared_turns):
-        g1 = np.array([baseAvgScores[i]], dtype=float)[0]
-        g2 = np.array([comparisonAvgScores[i]], dtype=float)[0]
-        g3 = np.array([comparisonAvgScores2[i]], dtype=float)[0]
-        
-        f, p = f_oneway(g1, g2, g3)
-        f_list.append(f)
+        g1 = np.array(baseAvgScores[i], dtype=float)
+        g2 = np.array(comparisonAvgScores[i], dtype=float)
+
+        t, p = ttest_ind(g1, g2, equal_var=False)
+        t_list.append(t)
         p_list.append(p)
 
-    return np.array(f_list), np.array(p_list)
+    return np.array(t_list), np.array(p_list)
 
 
 def load_json_from_user(prompt):
@@ -87,7 +86,7 @@ def load_json_from_user(prompt):
         else:
             print(f"File not found: {path}. Try again.")
 
-def plot_anova_results(f_stats, p_values, n_groups=3, n_samples_per_group=20, alpha=0.05):
+def plot_anova_results(f_stats, p_values, n_groups=2, n_samples_per_group=20, alpha=0.05):
     """
     Plots F-statistic and p-value time series with significance baselines.
     
@@ -153,7 +152,7 @@ compareData, compareMin, compare_name = load_json_from_user("Enter path to compa
 ) = computeTurnAverages(compareData, minCount=compareMin)
 
 
-Pragmaticf_statistic, Pragmaticp_value = calcOWANOVAConversation(pragmaticAvgScores, comparePragmaticAvgScores)
+Pragmaticf_statistic, Pragmaticp_value = calcTTestConversation(pragmaticAvgScores, comparePragmaticAvgScores)
 plot_anova_results(Pragmaticf_statistic, Pragmaticp_value)
-Semanticf_statistic, Semanticp_value = calcOWANOVAConversation(semanticAvgScores, compareSemanticAvgScores)
+Semanticf_statistic, Semanticp_value = calcTTestConversation(semanticAvgScores, compareSemanticAvgScores)
 plot_anova_results(Semanticf_statistic, Semanticp_value)
