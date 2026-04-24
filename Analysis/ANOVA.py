@@ -139,6 +139,7 @@ def plot_anova_results(f_stats, p_values, n_groups=3, n_samples_per_group=20, al
 
 baseData, baseMin, base_name = load_json_from_user("Enter path to base dataset: ")
 compareData, compareMin, compare_name = load_json_from_user("Enter path to comparison dataset: ")
+compareData2, compareMin2, compare_name2 = load_json_from_user("Enter path to comparison dataset: ")
 
 (
     turns,
@@ -152,8 +153,14 @@ compareData, compareMin, compare_name = load_json_from_user("Enter path to compa
     compareSemanticAvgScores
 ) = computeTurnAverages(compareData, minCount=compareMin)
 
+(
+    compareTurns2,
+    comparePragmaticAvgScores2,
+    compareSemanticAvgScores2
+) = computeTurnAverages(compareData2, minCount=compareMin2)
 
-Pragmaticf_statistic, Pragmaticp_value = calcOWANOVAConversation(pragmaticAvgScores, comparePragmaticAvgScores)
+
+Pragmaticf_statistic, Pragmaticp_value = calcOWANOVAConversation(pragmaticAvgScores, comparePragmaticAvgScores, comparePragmaticAvgScores2)
 plot_anova_results(Pragmaticf_statistic, Pragmaticp_value)
-Semanticf_statistic, Semanticp_value = calcOWANOVAConversation(semanticAvgScores, compareSemanticAvgScores)
+Semanticf_statistic, Semanticp_value = calcOWANOVAConversation(semanticAvgScores, compareSemanticAvgScores, compareSemanticAvgScores2)
 plot_anova_results(Semanticf_statistic, Semanticp_value)
