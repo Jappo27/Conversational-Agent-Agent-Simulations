@@ -6,7 +6,7 @@ import requests
 from ollamaClass import ollamaClass
 import threading
 
-m = ollamaClass("gemma3:12b")
+m = ollamaClass("gemma3") # If inaccurate may need to swap back to gemma3:12b
 m.updatekeepAlive("15m")
 
 app = Flask(
