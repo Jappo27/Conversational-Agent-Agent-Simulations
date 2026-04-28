@@ -1,120 +1,131 @@
 import json
 import os
 import numpy as np
-import matplotlib.pyplot as plt
 import pandas as pd
 from statsmodels.stats.anova import AnovaRM
+from scipy.stats import f
 
-def conversationAverage(convo, minCount=0):
-    results = {}
-    
-    for convId, messages in convo.items():
+
+def extractTurnScores(dataset):
+    pragDict = {}
+    semDict = {}
+
+    for convId, messages in dataset.items():
         pragScores = []
         semScores = []
-        
-        for msg in messages:
-            
-            if not isinstance(msg, list) or len(msg) < 2:
-                continue
-            prag, sem = msg[:2]
-            
-            if prag is None or sem is None:
-                continue
-            
-            pragScores.append(prag)
-            semScores.append(sem)
-        
-        #If elements below required quantity discard
-        if len(pragScores) < minCount:
-            continue
-        
-        results[convId] = {
-            "pragmatic_scores": pragScores,
-            "semantic_scores": semScores,
-            "pragmatic_avg": sum(pragScores) / len(pragScores) if pragScores else None,
-            "semantic_avg": sum(semScores) / len(semScores) if semScores else None
-        }
-    return results
 
-def buildLongDf(base, comp, comp2):
-    #https://www.geeksforgeeks.org/python/how-to-perform-a-repeated-measures-anova-in-python/
-    #RManova requires a consistent amount of data for comparison otherwise Imbalanced error: This implementation uses truncation
-    n = min(len(base), len(comp), len(comp2))
-    df = pd.DataFrame({
-        "subject": list(range(n)) * 3,
-        "condition": (["base"] * n) + (["comparison"] * n) + (["comparison2"] * n),
-        "score": base[:n] + comp[:n] + comp2[:n]
-    })
+        for msg in messages:
+            if isinstance(msg, list) and len(msg) >= 2:
+                p, s = msg[:2]
+                if p is not None and s is not None:
+                    pragScores.append(p)
+                    semScores.append(s)
+
+        pragDict[convId] = pragScores
+        semDict[convId] = semScores
+
+    return pragDict, semDict
+
+
+def buildBalancedLongDf(scoreDict, minCount):
+    turnCounts = {}
+    for scores in scoreDict.values():
+        for turnIndex in range(len(scores)):
+            turnCounts[turnIndex] = turnCounts.get(turnIndex, 0) + 1
+
+    validTurns = [t for t, c in turnCounts.items() if c >= minCount]
+    if not validTurns:
+        raise ValueError("No turns meet the minimum count requirement.")
+
+    validConversations = [
+        convId for convId, scores in scoreDict.items()
+        if all(turn < len(scores) for turn in validTurns)
+    ]
+
+    if len(validConversations) < 2:
+        raise ValueError("Not enough conversations have all required turns.")
+
+    # Build long-format dataframe
+    rows = []
+    for convId in validConversations:
+        scores = scoreDict[convId]
+        for turnIndex in validTurns:
+            rows.append({
+                "subject": convId,
+                "condition": turnIndex,
+                "score": scores[turnIndex]
+            })
+
+    df = pd.DataFrame(rows)
     df["subject"] = df["subject"].astype("category")
     df["condition"] = df["condition"].astype("category")
+    df["score"] = df["score"].astype(float)
+
     return df
 
-def getAvgConvo(results):
-    pragScores = []
-    semScores = []
-    #Get Average scores for each conversation
-    for key in results:
-        pragScores.append(results[key]["pragmatic_avg"])
-        semScores.append(results[key]["semantic_avg"])
-    return pragScores, semScores
 
-def calcRmanovaConversation(baseScores, baseMin, comparisonScores, compareMin, comparisonScores2, compareMin2):
-    
-    #Convert JSON into usable format
-    baseResults = conversationAverage(baseScores, baseMin)
-    compareResults = conversationAverage(comparisonScores, compareMin)
-    compare2Results = conversationAverage(comparisonScores2, compareMin2)
-    
-    #Calculate average scores for each conversation
-    basePragAvgScores, baseSemAvgScores = getAvgConvo(baseResults)
-    comparePragAvgScores, compareSemAvgScores = getAvgConvo(compareResults)
-    compare2PragAvgScores, compare2SemAvgScores = getAvgConvo(compare2Results)
-    
-    #Build dataframe
-    pragDf = buildLongDf(basePragAvgScores, comparePragAvgScores, compare2PragAvgScores)
-    semDf = buildLongDf(baseSemAvgScores, compareSemAvgScores, compare2SemAvgScores)
-    
-    #RMAnova 
-    #https://statistics.laerd.com/statistical-guides/repeated-measures-anova-statistical-guide.php
-    anovaPrag = AnovaRM(
+def computeCriticalF(anovaResult, alpha=0.05):
+    table = anovaResult.anova_table
+    factorName = table.index[0]
+
+    df1 = table.loc[factorName, "Num DF"]
+    df2 = table.loc[factorName, "Den DF"]
+
+    fCrit = f.ppf(1 - alpha, df1, df2)
+    return df1, df2, fCrit
+
+
+def calcRmanovaAcrossConversations(dataset, minCount):
+    pragDict, semDict = extractTurnScores(dataset)
+
+    pragDf = buildBalancedLongDf(pragDict, minCount)
+    semDf = buildBalancedLongDf(semDict, minCount)
+
+    pragAnova = AnovaRM(
         data=pragDf,
         depvar="score",
         subject="subject",
         within=["condition"]
     ).fit()
-    
-    #RMAnova 
-    #https://statistics.laerd.com/statistical-guides/repeated-measures-anova-statistical-guide.php
-    anovaSem = AnovaRM(
+
+    semAnova = AnovaRM(
         data=semDf,
         depvar="score",
         subject="subject",
         within=["condition"]
     ).fit()
-    
-    return anovaPrag, anovaSem
+
+    return pragAnova, semAnova
+
 
 def loadJsonFromUser(prompt):
     while True:
         try:
-            minVal = int(input("Enter the minimum amount of data points per turn: ").strip())
-            if minVal < 0:
-                print("Minimum must be a non-negative integer.")
+            minCount = int(input("Enter minimum number of conversations per turn: ").strip())
+            if minCount <= 0:
+                print("Minimum count must be positive.")
                 continue
         except ValueError:
-            print("Please enter a valid integer for the minimum.")
+            print("Please enter a valid integer.")
             continue
+
         path = input(prompt).strip()
         if os.path.exists(path):
             with open(path, "r") as f:
-                return json.load(f), minVal, os.path.basename(path)
+                return json.load(f), minCount
         else:
             print(f"File not found: {path}. Try again.")
 
-baseData, baseMin, baseName = loadJsonFromUser("Enter path to base dataset: ")
-compareData, compareMin, compareName = loadJsonFromUser("Enter path to comparison dataset: ")
-compareData2, compareMin2, compareName2 = loadJsonFromUser("Enter path to comparison dataset: ")
 
-anovaPrag, anovaSem = calcRmanovaConversation(baseData, baseMin, compareData, compareMin, compareData2, compareMin2)
+data, minCount = loadJsonFromUser("Enter path to conversation JSON: ")
+anovaPrag, anovaSem = calcRmanovaAcrossConversations(data, minCount)
+
+print("\n=== Pragmatic RM-ANOVA ===")
 print(anovaPrag)
+df1, df2, fCrit = computeCriticalF(anovaPrag)
+print(f"\nPragmatic F-critical (α=0.05): df1={df1}, df2={df2}, Fcrit={fCrit:.4f}")
+
+print("\n=== Semantic RM-ANOVA ===")
 print(anovaSem)
+df1, df2, fCrit = computeCriticalF(anovaSem)
+print(f"\nSemantic F-critical (α=0.05): df1={df1}, df2={df2}, Fcrit={fCrit:.4f}")
