@@ -13,7 +13,10 @@ Before running the project, ensure the following dependencies are installed:
   https://ollama.com/download/windows  
 
 - **React (Frontend Framework)**  
-  https://react.dev/learn/installation  
+  https://react.dev/learn/installation
+  
+- **Node.js (Frontend Framework)**    
+  https://nodejs.org/en
 
 - **PrimeReact (UI Component Library)**  
   https://primereact.org/installation/  
@@ -23,6 +26,8 @@ To install all required Python packages, open a terminal in the project root and
 
 ```
 pip install -r requirements.txt
+npm install
+npm install vite --save-dev
 ```
 
 This installs all backend dependencies, including model clients, embedding libraries, PDF processing, and server utilities.
@@ -30,6 +35,10 @@ This installs all backend dependencies, including model clients, embedding libra
 ---
 
 ## Set Up
+
+Ensure that LongPathsEnabled is enabled
+https://www.youtube.com/watch?v=U_Imp2TQyQI&t=162s
+(If you are using a University device you will need to contact IT services)
 
 Navigate to the backend server directory and start the API:
 
@@ -265,7 +274,19 @@ Generattion Details:
 - Turns - How many turns occour in the dyadic conversation generation
 - Reflects - How many times a model can reject an utterance
 
+  
 <img width="1920" height="1488" alt="image" src="https://github.com/user-attachments/assets/43c43b7c-7cd4-4723-b863-33087309e10e" />
+
+- Press Ctrl+C in the terminal to stop the server.
+
+After submitting a JSON configuration, all existing files are automatically replaced with the new profiles and parameters.
+
+Run generate.py to execute the full generation pipeline.
+
+The system is built using the CRRR architecture (Constrained Prompting → Retrieval → Reflection → Reflexion).
+<img width="3000" height="4000" alt="Generate" src="https://github.com/user-attachments/assets/25858361-0ebc-42bb-93b9-5e9948b1993c" />
+
+<img width="3000" height="4000" alt="Generate" src="https://github.com/user-attachments/assets/25858361-0ebc-42bb-93b9-5e9948b1993c" />
 
 ## Governance:
 
