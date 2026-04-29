@@ -1,7 +1,7 @@
 {
-    "modelName": "glm-4.7-flash",
+    "modelName": "qwen3-next",
     "role": "user",
-    "prompt": "sdfds",
+    "prompt": "",
     "system": "",
     "suffix": "",
     "raw": true,
