@@ -9,6 +9,12 @@ Psychologists often spend a significant portion of their time conducting intervi
 ### Required Downloads  
 Before running the project, ensure the following dependencies are installed:
 
+- **Python**
+- https://www.python.org/downloads/release/python-3120/
+
+- **IDE (VSC)**
+  Recommended: https://code.visualstudio.com/
+  
 - **Ollama (Windows)**  
   https://ollama.com/download/windows  
 
