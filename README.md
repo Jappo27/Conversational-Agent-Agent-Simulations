@@ -292,8 +292,6 @@ Run generate.py to execute the full generation pipeline.
 The system is built using the CRRR architecture (Constrained Prompting → Retrieval → Reflection → Reflexion).
 <img width="3000" height="4000" alt="Generate" src="https://github.com/user-attachments/assets/25858361-0ebc-42bb-93b9-5e9948b1993c" />
 
-<img width="3000" height="4000" alt="Generate" src="https://github.com/user-attachments/assets/25858361-0ebc-42bb-93b9-5e9948b1993c" />
-
 ## Governance:
 
 Every time an agent produces a component of its final response—whether it’s a retrieved context block, a reflexion pass, or a final utterance—the system stores that output as a generation ticket. These tickets provide a complete audit trail of how the agent constructed its answer.
