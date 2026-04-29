@@ -2,6 +2,8 @@ import json
 import os
 import matplotlib.pyplot as plt
 import numpy as np
+from math import sqrt
+from scipy.stats import f_oneway, f
 
 def computeTurnAverages(dataset, minCount=20):
     turnScores = {}                 # turnIndex → list of [pragmatic, semantic]
@@ -54,6 +56,71 @@ def computeTurnAverages(dataset, minCount=20):
         semanticStdDevs
     )
 
+def calcOWANOVAConversation(baseAvgScores, comparisonAvgScores):
+    shared_turns = min(len(baseAvgScores), len(comparisonAvgScores))
+    
+    f_list = []
+    p_list = []
+
+    for i in range(shared_turns):
+        g1 = np.array([baseAvgScores[i]], dtype=float)[0]
+        g2 = np.array([comparisonAvgScores[i]], dtype=float)[0]
+        
+        f, p = f_oneway(g1, g2)
+        f_list.append(f)
+        p_list.append(p)
+
+    return np.array(f_list), np.array(p_list)
+
+def plot_anova_results(f_stats, p_values, n_samples_per_group, n_groups=2, alpha=0.05):
+    """
+    Plots F-statistic and p-value time series with significance baselines.
+    
+    Parameters:
+        f_stats (array-like): F-statistic values per turn
+        p_values (array-like): p-values per turn
+        n_groups (int): number of groups in the ANOVA
+        n_samples_per_group (int): samples per group
+        alpha (float): significance level (default 0.05)
+    """
+
+    f_stats = np.array(f_stats)
+    p_values = np.array(p_values)
+    turns = np.arange(1, len(f_stats) + 1)
+
+    # Degrees of freedom
+    df_between = n_groups - 1
+    df_within = n_groups * (n_samples_per_group - 1)
+
+    # F-critical value
+    F_crit = f.ppf(1 - alpha, df_between, df_within)
+
+    # --- Plotting ---
+    fig, axes = plt.subplots(2, 1, figsize=(12, 10), sharex=True)
+
+    # 1. F-statistic plot
+    axes[0].plot(turns, f_stats, marker='o', color='blue', label="F-statistic")
+    axes[0].axhline(y=F_crit, color='red', linestyle='--', alpha=0.7,
+                    label=f"F-critical (α={alpha}, df={df_between},{df_within}) = {F_crit:.2f}")
+    axes[0].set_ylabel("F-statistic")
+    axes[0].set_title("ANOVA F-statistic per Turn")
+    axes[0].grid(alpha=0.3)
+    axes[0].legend()
+
+    # 2. p-value plot
+    axes[1].plot(turns, p_values, marker='o', color='purple', label="p-value")
+    axes[1].axhline(y=alpha, color='red', linestyle='--', alpha=0.7,
+                    label=f"p = {alpha}")
+    axes[1].set_yscale('log')
+    axes[1].set_xlabel("Turn")
+    axes[1].set_ylabel("p-value (log scale)")
+    axes[1].set_title("ANOVA p-value per Turn")
+    axes[1].grid(alpha=0.3)
+    axes[1].legend()
+
+    plt.tight_layout()
+    plt.show()
+
 def load_json_from_user(prompt):
     while True:
         # Get minimum count and validate it is an integer >= 0
@@ -75,6 +142,7 @@ def load_json_from_user(prompt):
                 return json.load(f), Min, os.path.basename(path)
         else:
             print(f"File not found: {path}. Try again.")
+            
 
 baseData, baseMin, base_name = load_json_from_user("Enter path to base dataset: ")
 compareData, compareMin, compare_name = load_json_from_user("Enter path to comparison dataset: ")
@@ -95,6 +163,8 @@ compareData, compareMin, compare_name = load_json_from_user("Enter path to compa
     compareSemanticStdDevs
 ) = computeTurnAverages(compareData, minCount=compareMin)
 
+#f_statistic, p_value = calcOWANOVAConversation(pragmaticAvgScores, comparePragmaticAvgScores)
+#f_statistic, p_value = calcOWANOVAConversation(semanticAvgScores, compareSemanticAvgScores)
 
 compareTurns = list(range(len(comparePragmaticAvgScores)))
 shared_turns = sorted(set(turns).intersection(compareTurns))
@@ -109,8 +179,8 @@ semanticStdDevs_f = [std for t, std in zip(turns, semanticStdDevs) if t in share
 # Filter compare
 comparePragmaticAvgScores_f = [comparePragmaticAvgScores[t] for t in shared_turns]
 compareSemanticAvgScores_f = [compareSemanticAvgScores[t] for t in shared_turns]
-comparePragmaticStdDevs_f = [std for t, std in zip(turns, pragmaticStdDevs) if t in shared_turns]
-compareSemanticStdDevs_f = [std for t, std in zip(turns, semanticStdDevs) if t in shared_turns]
+comparePragmaticStdDevs_f = [std for t, std in zip(turns, comparePragmaticStdDevs) if t in shared_turns]
+compareSemanticStdDevs_f = [std for t, std in zip(turns, compareSemanticStdDevs) if t in shared_turns]
 
 # --- PRAGMATIC PLOT ---
 plt.figure(figsize=(10, 6))
@@ -190,3 +260,8 @@ plt.legend()
 plt.tight_layout()
 plt.ylim(0, 1)
 plt.show()
+
+Pragmaticf_statistic, Pragmaticp_value = calcOWANOVAConversation(pragmaticAvgScores, comparePragmaticAvgScores)
+plot_anova_results(Pragmaticf_statistic, Pragmaticp_value)
+Semanticf_statistic, Semanticp_value = calcOWANOVAConversation(semanticAvgScores, compareSemanticAvgScores)
+plot_anova_results(Semanticf_statistic, Semanticp_value)

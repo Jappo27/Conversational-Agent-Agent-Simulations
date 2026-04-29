@@ -5,8 +5,10 @@ from flask_cors import CORS
 import requests
 from ollamaClass import ollamaClass
 import threading
+from write import writeConvo
+from setUp import cleanseDefault
 
-m = ollamaClass("gemma3:12b")
+m = ollamaClass("gemma3")
 m.updatekeepAlive("15m")
 
 app = Flask(
@@ -374,5 +376,28 @@ def promptBuild():
     except Exception as e:
         return jsonify({"status": "Failure", "reason": str(e)}), 400
 
+@app.route('/convoSetup', methods=['POST'])
+def convoSetup():
+    try:
+        data = request.get_json()
+
+        Profile1 = data["profile1"]
+        Profile2 = data["profile2"]
+        convo = data["convo"]
+
+        base = os.path.dirname(os.path.abspath(__file__))
+
+        writeConvo(Profile1, base, "RAGOutput/Model-1.json")
+        writeConvo(Profile2, base, "RAGOutput/Model-2.json")
+        writeConvo(convo, base, "RAGOutput/convoParams.json")
+        
+        cleanseDefault()
+
+        return jsonify({"status": "Success", "data": "Uploaded"}), 200
+
+    except Exception as e:
+        return jsonify({"status": "Failure", "reason": str(e)}), 400
+
+    
 if __name__ == "__main__":
     app.run(debug=True)

@@ -53,7 +53,7 @@ paths = {
     "BaseLLM": r"C:\Users\jappo\OneDrive\Desktop\Conversational-Agent-Agent-Simulations\Analysis\DATA\BaseLLM.json",
     "PromptStruct": r"C:\Users\jappo\OneDrive\Desktop\Conversational-Agent-Agent-Simulations\Analysis\DATA\PromptStruct.json",
     "Rag": r"C:\Users\jappo\OneDrive\Desktop\Conversational-Agent-Agent-Simulations\Analysis\DATA\\Rag.json",
-    "ReAct": r"C:\Users\jappo\OneDrive\Desktop\Conversational-Agent-Agent-Simulations\Analysis\DATA\ReAct.json",
+    "Reflection": r"C:\Users\jappo\OneDrive\Desktop\Conversational-Agent-Agent-Simulations\Analysis\DATA\ReAct.json",
     "CRRR": r"C:\Users\jappo\OneDrive\Desktop\Conversational-Agent-Agent-Simulations\Analysis\DATA\CRRRMethodology.json",
     "CRRRS": r"C:\Users\jappo\OneDrive\Desktop\Conversational-Agent-Agent-Simulations\Analysis\DATA\CRVRS.json",
     "ComplexPrompt": r"C:\Users\jappo\OneDrive\Desktop\Conversational-Agent-Agent-Simulations\Analysis\DATA\ComplexPrompt.json"
@@ -72,7 +72,7 @@ for name, data in datasets.items():
 colors = {
     "CRRRS": "tab:olive",
     "CRRR": "tab:purple",
-    "ReAct": "tab:red",
+    "Reflection": "tab:red",
     "Rag": "tab:green",
     "PromptStruct": "tab:orange",
     "BaseLLM": "tab:blue",

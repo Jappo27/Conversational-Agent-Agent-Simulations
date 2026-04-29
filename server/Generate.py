@@ -185,22 +185,52 @@ def getInputFromUser(prompt_text):
             continue
 
         return value
-
-profile1, filename = loadUserJson("Enter path to first agent profile: ")
-profile2 , filename = loadUserJson("Enter path to second agent profile: ")
     
+import json
+import os
 
-# --- Loop until valid ---
-while True:
-    turns = getInputFromUser("Enter number of turns: ")
-    ConvoNum = getInputFromUser("Enter number of conversations: ")
-    reflexes = getInputFromUser("Enter number of reflexions: ")
+def loadJson(path):
+    """
+    Safely loads a JSON file with full error handling.
+    Returns:
+        dict  – if loaded successfully
+        None  – if any error occurs
+    """
+    if not os.path.exists(path):
+        print(f"[ERROR] File not found: {path}")
+        return None
 
     try:
-        validateParams(turns, ConvoNum, reflexes)
-        print("Parameters accepted.")
-        break
-    except Exception as e:
-        print(f"Invalid input: {e}")
+        with open(path, "r") as f:
+            return json.load(f)
 
-conversate(ConvoNum, turns, reflexes, profile1, profile2)
+    except json.JSONDecodeError as e:
+        print(f"[ERROR] Invalid JSON in {path}: {e}")
+        return None
+
+    except PermissionError:
+        print(f"[ERROR] Permission denied when reading {path}")
+        return None
+
+    except Exception as e:
+        print(f"[ERROR] Unexpected error loading {path}: {e}")
+        return None
+
+
+profile1 = loadJson("server/RAGOutput/Model-1.json")
+profile2 = loadJson("server/RAGOutput/Model-2.json")
+convo = loadJson("server/RAGOutput/convoParams.json")
+
+if profile1 is None or profile2 is None or convo is None:
+    print("Critical error: one or more required JSON files could not be loaded.")
+else:
+    turns     = convo.get("turns")
+    convoNum  = convo.get("ConvoNum")
+    try:
+        reflexes  = convo.get("reflexes")
+    except:
+        reflexes = 3
+validateParams(turns, convoNum, reflexes)
+print("Parameters accepted.")
+
+conversate(convoNum, turns, reflexes, profile1, profile2)
