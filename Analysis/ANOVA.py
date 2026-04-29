@@ -159,5 +159,8 @@ compareData2, compareMin2, compare_name2 = load_json_from_user("Enter path to co
     compareSemanticAvgScores2
 ) = computeTurnAverages(compareData2, minCount=compareMin2)
 
-anova = calcOWANOVAConversation(pragmaticAvgScores, comparePragmaticAvgScores, comparePragmaticAvgScores2)
-anova = calcOWANOVAConversation(semanticAvgScores, compareSemanticAvgScores, compareSemanticAvgScores2)
+
+Pragmaticf_statistic, Pragmaticp_value = calcOWANOVAConversation(pragmaticAvgScores, comparePragmaticAvgScores, comparePragmaticAvgScores2)
+plot_anova_results(Pragmaticf_statistic, Pragmaticp_value)
+Semanticf_statistic, Semanticp_value = calcOWANOVAConversation(semanticAvgScores, compareSemanticAvgScores, compareSemanticAvgScores2)
+plot_anova_results(Semanticf_statistic, Semanticp_value)

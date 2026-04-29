@@ -8,7 +8,7 @@ import threading
 from write import writeConvo
 from setUp import cleanseDefault
 
-m = ollamaClass("gemma3")
+m = ollamaClass("gemma3") # If inaccurate may need to swap back to gemma3:12b
 m.updatekeepAlive("15m")
 
 app = Flask(

@@ -57,4 +57,3 @@ def cleanseDefault():
     cleanseDir(os.path.join(os.path.dirname(os.path.abspath(__file__)), "RAGOutput/Governance/2/Reflex"))
 
     cleanseDir(os.path.join(os.path.dirname(os.path.abspath(__file__)), "RAGOutput/Thinking"))
-
