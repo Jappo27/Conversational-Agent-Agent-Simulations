@@ -1,0 +1,10 @@
+cff-version: 1.2.0
+message: "If you use this software or related generated conversations within any published material, please cite it as below."
+authors:
+  - family-names: "Japp"
+    given-names: "Oliver"
+
+title: "Conversational-Agent-Agent-Simulations"
+version: "1.0"
+date-released: 2026-05-01
+url: "https://github.com/Jappo27/Conversational-Agent-Agent-Simulations"
